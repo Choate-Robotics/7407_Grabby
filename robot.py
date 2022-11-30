@@ -40,9 +40,10 @@ class Grabby(wpilib.TimedRobot):
         commands2.CommandScheduler.getInstance().schedule(
             command.DriveSwerveCustom(Robot.drivetrain)
         )
+        self.encoder = wpilib.AnalogEncoder(0)
 
     def teleopPeriodic(self):
-        pass
+        print(self.encoder.getAbsolutePosition())
 
     def autonomousInit(self):
         pass
