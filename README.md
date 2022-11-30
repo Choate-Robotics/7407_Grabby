@@ -1,11 +1,11 @@
 
-# 7407-DriveCode-{TEMPLATE}
+# 7407_Grabby
 
-Team 7407 Wired Boars {TEMPLATE} Robot Code
+Team 7407 Wired Boars Grabby Robot Code
 
 ## File Tree:
 ```
-7407-DriveCode-Template
+7407_Grabby
 ├── autonomous (Contains autonomous routines for robot)
 ├── command (Contains commands for command scheduling)
 │   └── __init__.py
@@ -35,14 +35,14 @@ Team 7407 Wired Boars {TEMPLATE} Robot Code
 
 ```
 
-git clone https://github.com/Choate-Robotics/7407-DriveCode-Template.git
+git clone https://github.com/Choate-Robotics/7407_Grabby.git
 
 ```
 If you prefer ssh:
 
 ```
 
-git clone git@github.com:Choate-Robotics/7407-DriveCode-Template.git
+git clone git@github.com:Choate-Robotics/7407_Grabby.git
 
 ```
 
@@ -84,7 +84,7 @@ poetry install
 ```
 
 ### Deploying Code:
-Connect to the robot's wifi.
+Connect to the robot's wireless network.
 ``python robot.py deploy``
 If absolutely necessary, use ``python robot.py deploy --no-version-check`` to avoid WPILib version issues on the robot.
 
