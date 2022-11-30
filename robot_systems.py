@@ -1,10 +1,11 @@
-import subsystem
-import sensors
 import wpilib
+
+import sensors
+import subsystem
 
 
 class Robot:
-    pass
+    drivetrain = subsystem.Drivetrain()
 
 
 class Pneumatics:

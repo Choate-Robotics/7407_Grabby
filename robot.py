@@ -1,6 +1,8 @@
 import commands2
 import ctre
 import wpilib
+from robotpy_toolkit_7407 import Subsystem
+
 import command
 import config
 import constants
@@ -10,9 +12,8 @@ import subsystem
 import utils
 from oi.OI import OI
 
-from robotpy_toolkit_7407.motors import TalonFX
 
-class Robot(wpilib.TimedRobot):
+class Grabby(wpilib.TimedRobot):
     def __init__(self):
         super().__init__()
 
@@ -21,16 +22,28 @@ class Robot(wpilib.TimedRobot):
         OI.init()
         OI.map_controls()
 
-    # Initialize subsystems
+        subsystems: list[Subsystem] = list(
+            {
+                k: v for k, v in Robot.__dict__.items() if isinstance(v, Subsystem)
+            }.values()
+        )
 
-    # Pneumatics
+        for sub in subsystems:
+            sub.init()
+
+        commands2.CommandScheduler.getInstance().setPeriod(constants.period)
+
+    def robotPeriodic(self) -> None:
+        commands2.CommandScheduler.getInstance().run()
 
     def teleopInit(self):
-        a = ctre.VictorSPX(1)
-        a.set(ctre.ControlMode.PercentOutput, .5)
+        commands2.CommandScheduler.getInstance().schedule(
+            command.DriveSwerveCustom(robot_systems.Robot.drivetrain)
+        )
 
     def teleopPeriodic(self):
         pass
+
     def autonomousInit(self):
         pass
 
@@ -45,4 +58,4 @@ class Robot(wpilib.TimedRobot):
 
 
 if __name__ == "__main__":
-    wpilib.run(Robot)
+    wpilib.run(Grabby)
