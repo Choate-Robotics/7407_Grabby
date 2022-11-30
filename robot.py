@@ -6,11 +6,11 @@ from robotpy_toolkit_7407 import Subsystem
 import command
 import config
 import constants
-import robot_systems
 import sensors
 import subsystem
 import utils
 from oi.OI import OI
+from robot_systems import Robot
 
 
 class Grabby(wpilib.TimedRobot):
@@ -38,7 +38,7 @@ class Grabby(wpilib.TimedRobot):
 
     def teleopInit(self):
         commands2.CommandScheduler.getInstance().schedule(
-            command.DriveSwerveCustom(robot_systems.Robot.drivetrain)
+            command.DriveSwerveCustom(Robot.drivetrain)
         )
 
     def teleopPeriodic(self):
