@@ -3,9 +3,8 @@ from dataclasses import dataclass
 
 import rev
 import wpilib
-from ctre import CANCoder, Pigeon2
+from ctre import Pigeon2
 from robotpy_toolkit_7407.motors.rev_motors import SparkMax, SparkMaxConfig
-from robotpy_toolkit_7407.sensors.gyro.ADIS16448 import GyroADIS16448
 from robotpy_toolkit_7407.subsystem_templates.drivetrain import (
     SwerveDrivetrain,
     SwerveGyro,
@@ -37,8 +36,9 @@ MOVE_CONFIG = SparkMaxConfig(
 class SparkMaxSwerveNode(SwerveNode):
     m_move: SparkMax
     m_turn: SparkMax
-    encoder: CANCoder
-    encoder_zeroed_absolute_pos_radians: radians = 0
+    encoder: wpilib.AnalogEncoder
+    encoder_zeroed_absolute_pos: float = 0
+    encoder_counts_per_rev: int = 4096
 
     def init(self):
         super().init()
@@ -47,12 +47,10 @@ class SparkMaxSwerveNode(SwerveNode):
 
     # make the turn motor set their sensor 0 to current horizontal thingy
     def zero(self):
-        current_absolute_pos_radians = math.radians(self.encoder.getAbsolutePosition())
-        new_sensor_pos_radians = (
-            current_absolute_pos_radians - self.encoder_zeroed_absolute_pos_radians
-        )
+        current_absolute_pos = self.encoder.getAbsolutePosition()
+        new_sensor_pos = current_absolute_pos - self.encoder_zeroed_absolute_pos
         self.m_turn.set_sensor_position(
-            new_sensor_pos_radians * constants.drivetrain_turn_gear_ratio
+            new_sensor_pos * constants.drivetrain_turn_gear_ratio
         )
 
     # reposition the wheels
@@ -88,16 +86,28 @@ class PigeonIMUGyro(SwerveGyro):
 
 class Drivetrain(SwerveDrivetrain):
     n_00 = SparkMaxSwerveNode(
-        SparkMax(7, config=MOVE_CONFIG), SparkMax(8, config=TURN_CONFIG), CANCoder(12)
+        SparkMax(7, config=MOVE_CONFIG),
+        SparkMax(8, config=TURN_CONFIG),
+        wpilib.AnalogEncoder(1),
+        encoder_zeroed_absolute_pos=0.990,
     )
     n_01 = SparkMaxSwerveNode(
-        SparkMax(1, config=MOVE_CONFIG), SparkMax(2, config=TURN_CONFIG), CANCoder(9)
+        SparkMax(1, config=MOVE_CONFIG),
+        SparkMax(2, config=TURN_CONFIG),
+        wpilib.AnalogEncoder(0),
+        encoder_zeroed_absolute_pos=0.578,
     )
     n_10 = SparkMaxSwerveNode(
-        SparkMax(5, config=MOVE_CONFIG), SparkMax(6, config=TURN_CONFIG), CANCoder(11)
+        SparkMax(5, config=MOVE_CONFIG),
+        SparkMax(6, config=TURN_CONFIG),
+        wpilib.AnalogEncoder(2),
+        encoder_zeroed_absolute_pos=0.499,
     )
     n_11 = SparkMaxSwerveNode(
-        SparkMax(3, config=MOVE_CONFIG), SparkMax(4, config=TURN_CONFIG), CANCoder(10)
+        SparkMax(3, config=MOVE_CONFIG),
+        SparkMax(4, config=TURN_CONFIG),
+        wpilib.AnalogEncoder(3),
+        encoder_zeroed_absolute_pos=0.414,
     )
     gyro = PigeonIMUGyro()
     axis_dx = Keymap.Drivetrain.DRIVE_X_AXIS

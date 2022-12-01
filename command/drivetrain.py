@@ -1,13 +1,5 @@
-import math
+from robotpy_toolkit_7407.command import SubsystemCommand
 
-import commands2
-import wpilib
-from robotpy_toolkit_7407.command import Command, SubsystemCommand
-from robotpy_toolkit_7407.subsystem_templates.drivetrain.swerve_drivetrain import (
-    SwerveDrivetrain,
-)
-
-from robot_systems import Robot
 from subsystem import Drivetrain
 
 
@@ -54,7 +46,9 @@ class DriveSwerveCustom(SubsystemCommand[Drivetrain]):
                 (dy, -dx), d_theta * self.subsystem.max_angular_vel
             )
         else:
-            self.subsystem.set((dx, dy), d_theta * self.subsystem.max_angular_vel)
+            self.subsystem.set_robot_centric(
+                (dx, dy), d_theta * self.subsystem.max_angular_vel
+            )
 
     def end(self, interrupted: bool) -> None:
         self.subsystem.n_00.set(0, 0)
