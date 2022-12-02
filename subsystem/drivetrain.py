@@ -7,6 +7,7 @@ import rev
 import wpilib
 from ctre import Pigeon2
 from robotpy_toolkit_7407.motors.rev_motors import SparkMax, SparkMaxConfig
+from robotpy_toolkit_7407.sensors.gyro import ADIS16448
 from robotpy_toolkit_7407.subsystem_templates.drivetrain import (
     SwerveDrivetrain,
     SwerveGyro,
@@ -22,8 +23,6 @@ from robotpy_toolkit_7407.utils.units import (
     s,
 )
 from wpimath.geometry import Pose2d
-
-from robotpy_toolkit_7407.sensors.gyro import ADIS16448
 
 import constants
 from oi.keymap import Keymap
@@ -52,21 +51,42 @@ class SparkMaxSwerveNode(SwerveNode):
 
     # make the turn motor set their sensor 0 to current horizontal thingy
     def zero(self):
-        current_absolute_pos = self.encoder.getAbsolutePosition()
-        sensor_diff = self.encoder_zeroed_absolute_pos-current_absolute_pos
+        # current_absolute_pos = self.encoder.getAbsolutePosition()
+        # sensor_diff = self.encoder_zeroed_absolute_pos - current_absolute_pos
+        #
+        # print(
+        #     f"T_CURRENT: {current_absolute_pos*2*math.pi} E_CURRENT: {self.get_current_motor_angle()} T_DISTANCE: {sensor_diff*2*math.pi} T_DESIRED: {self.encoder_zeroed_absolute_pos*2*math.pi} E_DESIRED: {sensor_diff*2*math.pi + self.get_current_motor_angle()}"
+        # )
+        #
+        # pos = sensor_diff * 2 * math.pi + self.get_current_motor_angle()
+        # self.m_turn.set_target_position(
+        #     (pos / (2 * math.pi)) * constants.drivetrain_turn_gear_ratio
+        # )
+        # # time.sleep(1)
+        # # self.m_turn.set_sensor_position(0)
 
-        print(f"T_CURRENT: {current_absolute_pos*2*math.pi} E_CURRENT: {self.get_current_motor_angle()} T_DISTANCE: {sensor_diff*2*math.pi} T_DESIRED: {self.encoder_zeroed_absolute_pos*2*math.pi} E_DESIRED: {sensor_diff*2*math.pi + self.get_current_motor_angle()}")
+        diff = self.encoder_zeroed_absolute_pos - self.encoder.getAbsolutePosition()
+        diff_rad = diff * 2 * math.pi
 
-        pos = sensor_diff*2*math.pi + self.get_current_motor_angle()
-        self.m_turn.set_target_position((pos / (2 * math.pi)) * constants.drivetrain_turn_gear_ratio)
-        # time.sleep(1)
-        # self.m_turn.set_sensor_position(0)
+        current_position_rad = self.get_current_motor_angle()
+        #
+        # self.direct_set_motor_angle(current_position + diff_rad)
+
+        real_position = current_position_rad-diff_rad
+        self.m_turn.set_sensor_position((real_position / (2*math.pi) * constants.drivetrain_turn_gear_ratio))
 
     # reposition the wheels
     def set_motor_angle(self, pos: radians):
         if self.turn_reversed:
             pos *= -1
-        self.m_turn.set_target_position((pos / (2 * math.pi)) * constants.drivetrain_turn_gear_ratio)
+        self.m_turn.set_target_position(
+            (pos / (2 * math.pi)) * constants.drivetrain_turn_gear_ratio
+        )
+
+    def direct_set_motor_angle(self, pos: radians):
+        self.m_turn.set_target_position(
+            (pos / (2 * math.pi)) * constants.drivetrain_turn_gear_ratio
+        )
 
     def get_current_motor_angle(self) -> radians:
         return self.m_turn.get_sensor_position() / constants.drivetrain_turn_gear_ratio
@@ -119,7 +139,7 @@ class Drivetrain(SwerveDrivetrain):
         wpilib.AnalogEncoder(1),
         encoder_zeroed_absolute_pos=0.990,
         turn_reversed=True,
-        drive_reversed=True
+        drive_reversed=True,
     )
     n_01 = SparkMaxSwerveNode(
         SparkMax(1, config=MOVE_CONFIG),
@@ -142,7 +162,7 @@ class Drivetrain(SwerveDrivetrain):
         wpilib.AnalogEncoder(3),
         encoder_zeroed_absolute_pos=0.414,
         turn_reversed=True,
-        drive_reversed=True
+        drive_reversed=True,
     )
 
     # gyro = PigeonIMUGyro()
