@@ -1,18 +1,19 @@
 import math
 
-from robotpy_toolkit_7407.motors.ctre_motors import (
-    talon_sensor_accel_unit,
-    talon_sensor_unit,
-    talon_sensor_vel_unit,
+from robotpy_toolkit_7407.motors.rev_motors import (
+    rev_sensor_accel_unit,
+    rev_sensor_unit,
+    rev_sensor_vel_unit
 )
-from robotpy_toolkit_7407.unum.units import cm
+
 from robotpy_toolkit_7407.utils.units import deg, ft, hour, inch, m, mile, rad, rev, s
 
 period = 0.03
 
 # --- DRIVETRAIN ---
-drivetrain_turn_gear_ratio = (3353.33 * talon_sensor_unit / rad).asNumber()
-drivetrain_move_gear_ratio = ((544318 * talon_sensor_unit) / (511 * inch)).asNumber(
+# drivetrain_turn_gear_ratio = ((8.16 * 4096)/(2*math.pi) * rev_sensor_unit / rad).asNumber()
+drivetrain_turn_gear_ratio = 80.4848
+drivetrain_move_gear_ratio = ((544318 * rev_sensor_unit) / (511 * inch)).asNumber(
     rad / m
 )
 

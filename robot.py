@@ -1,3 +1,5 @@
+import math
+
 import commands2
 import wpilib
 from robotpy_toolkit_7407 import Subsystem
@@ -31,21 +33,6 @@ class Grabby(wpilib.TimedRobot):
     def robotPeriodic(self) -> None:
         commands2.CommandScheduler.getInstance().run()
 
-    def teleopInit(self):
-        def zero():
-            Robot.drivetrain.n_00.zero()
-            Robot.drivetrain.n_01.zero()
-            Robot.drivetrain.n_10.zero()
-            Robot.drivetrain.n_11.zero()
-
-        zero()
-
-        commands2.CommandScheduler.getInstance().schedule(
-            command.DriveSwerveCustom(Robot.drivetrain)
-        )
-
-    def teleopPeriodic(self):
-
         wpilib.SmartDashboard.putNumber(
             "Encoder 00", Robot.drivetrain.n_00.encoder.getAbsolutePosition()
         )
@@ -58,6 +45,23 @@ class Grabby(wpilib.TimedRobot):
         wpilib.SmartDashboard.putNumber(
             "Encoder 11", Robot.drivetrain.n_11.encoder.getAbsolutePosition()
         )
+
+    def teleopInit(self):
+        def zero():
+            Robot.drivetrain.n_00.zero()
+            Robot.drivetrain.n_01.zero()
+            Robot.drivetrain.n_10.zero()
+            Robot.drivetrain.n_11.zero()
+
+        # zero()
+
+        commands2.CommandScheduler.getInstance().schedule(
+            command.DriveSwerveCustom(Robot.drivetrain)
+        )
+
+    def teleopPeriodic(self):
+        ...
+
 
     def autonomousInit(self):
         pass
