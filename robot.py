@@ -62,7 +62,9 @@ class Grabby(wpilib.TimedRobot):
     def teleopInit(self):
 
         commands2.CommandScheduler.getInstance().schedule(
-            command.DrivetrainZero(Robot.drivetrain).andThen(command.DriveSwerveCustom(Robot.drivetrain))
+            command.DrivetrainZero(Robot.drivetrain).andThen(
+                command.DriveSwerveCustom(Robot.drivetrain)
+            )
         )
 
     def teleopPeriodic(self):

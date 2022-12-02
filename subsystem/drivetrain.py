@@ -51,29 +51,15 @@ class SparkMaxSwerveNode(SwerveNode):
 
     # make the turn motor set their sensor 0 to current horizontal thingy
     def zero(self):
-        # current_absolute_pos = self.encoder.getAbsolutePosition()
-        # sensor_diff = self.encoder_zeroed_absolute_pos - current_absolute_pos
-        #
-        # print(
-        #     f"T_CURRENT: {current_absolute_pos*2*math.pi} E_CURRENT: {self.get_current_motor_angle()} T_DISTANCE: {sensor_diff*2*math.pi} T_DESIRED: {self.encoder_zeroed_absolute_pos*2*math.pi} E_DESIRED: {sensor_diff*2*math.pi + self.get_current_motor_angle()}"
-        # )
-        #
-        # pos = sensor_diff * 2 * math.pi + self.get_current_motor_angle()
-        # self.m_turn.set_target_position(
-        #     (pos / (2 * math.pi)) * constants.drivetrain_turn_gear_ratio
-        # )
-        # # time.sleep(1)
-        # # self.m_turn.set_sensor_position(0)
-
         diff = self.encoder_zeroed_absolute_pos - self.encoder.getAbsolutePosition()
         diff_rad = diff * 2 * math.pi
 
         current_position_rad = self.get_current_motor_angle()
-        #
-        # self.direct_set_motor_angle(current_position + diff_rad)
 
-        real_position = current_position_rad-diff_rad
-        self.m_turn.set_sensor_position((real_position / (2*math.pi) * constants.drivetrain_turn_gear_ratio))
+        real_position = current_position_rad - diff_rad
+        self.m_turn.set_sensor_position(
+            (real_position / (2 * math.pi) * constants.drivetrain_turn_gear_ratio)
+        )
 
     # reposition the wheels
     def set_motor_angle(self, pos: radians):

@@ -4,7 +4,7 @@ from subsystem import Drivetrain
 
 
 def curve_abs(x):
-    return x ** 2.4
+    return x**2.4
 
 
 def curve(x):
@@ -80,12 +80,20 @@ class DrivetrainZero(SubsystemCommand[Drivetrain]):
         self.subsystem.n_11.set_motor_angle(0)
 
     def zero_success(self):
-        threshold = .02
+        threshold = 0.02
 
         success = True
 
-        for i in [self.subsystem.n_00, self.subsystem.n_01, self.subsystem.n_10, self.subsystem.n_11]:
-            if not (abs(i.encoder.getAbsolutePosition() - i.encoder_zeroed_absolute_pos) < threshold):
+        for i in [
+            self.subsystem.n_00,
+            self.subsystem.n_01,
+            self.subsystem.n_10,
+            self.subsystem.n_11,
+        ]:
+            if not (
+                abs(i.encoder.getAbsolutePosition() - i.encoder_zeroed_absolute_pos)
+                < threshold
+            ):
                 success = False
 
         return success
