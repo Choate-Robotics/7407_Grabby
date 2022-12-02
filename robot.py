@@ -46,22 +46,34 @@ class Grabby(wpilib.TimedRobot):
             "Encoder 11", Robot.drivetrain.n_11.encoder.getAbsolutePosition()
         )
 
+        wpilib.SmartDashboard.putNumber(
+            "Real 00", Robot.drivetrain.n_00.m_turn.get_sensor_position()
+        )
+        wpilib.SmartDashboard.putNumber(
+            "Real 01", Robot.drivetrain.n_01.m_turn.get_sensor_position()
+        )
+        wpilib.SmartDashboard.putNumber(
+            "Real 10", Robot.drivetrain.n_10.m_turn.get_sensor_position()
+        )
+        wpilib.SmartDashboard.putNumber(
+            "Real 11", Robot.drivetrain.n_11.m_turn.get_sensor_position()
+        )
+
     def teleopInit(self):
+        commands2.CommandScheduler.getInstance().schedule(
+            command.DriveSwerveCustom(Robot.drivetrain)
+        )
+
         def zero():
             Robot.drivetrain.n_00.zero()
             Robot.drivetrain.n_01.zero()
             Robot.drivetrain.n_10.zero()
             Robot.drivetrain.n_11.zero()
 
-        # zero()
-
-        commands2.CommandScheduler.getInstance().schedule(
-            command.DriveSwerveCustom(Robot.drivetrain)
-        )
+        zero()
 
     def teleopPeriodic(self):
         ...
-
 
     def autonomousInit(self):
         pass

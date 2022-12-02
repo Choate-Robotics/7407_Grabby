@@ -1,4 +1,5 @@
 import math
+import time
 from dataclasses import dataclass
 
 import ctre
@@ -52,12 +53,14 @@ class SparkMaxSwerveNode(SwerveNode):
     # make the turn motor set their sensor 0 to current horizontal thingy
     def zero(self):
         current_absolute_pos = self.encoder.getAbsolutePosition()
-        new_sensor_pos = current_absolute_pos - self.encoder_zeroed_absolute_pos
-        new_sensor_pos_rad = new_sensor_pos * (2 * math.pi)
+        sensor_diff = self.encoder_zeroed_absolute_pos-current_absolute_pos
 
-        self.m_turn.set_sensor_position(
-            new_sensor_pos_rad * constants.drivetrain_turn_gear_ratio
-        )
+        print(f"T_CURRENT: {current_absolute_pos*2*math.pi} E_CURRENT: {self.get_current_motor_angle()} T_DISTANCE: {sensor_diff*2*math.pi} T_DESIRED: {self.encoder_zeroed_absolute_pos*2*math.pi} E_DESIRED: {sensor_diff*2*math.pi + self.get_current_motor_angle()}")
+
+        pos = sensor_diff*2*math.pi + self.get_current_motor_angle()
+        self.m_turn.set_target_position((pos / (2 * math.pi)) * constants.drivetrain_turn_gear_ratio)
+        # time.sleep(1)
+        # self.m_turn.set_sensor_position(0)
 
     # reposition the wheels
     def set_motor_angle(self, pos: radians):
@@ -72,7 +75,6 @@ class SparkMaxSwerveNode(SwerveNode):
     def set_motor_velocity(self, vel: meters_per_second):
         if self.drive_reversed:
             vel *= -1
-        print("DESIRED VEL: ", vel)
         self.m_move.set_target_velocity(vel * constants.drivetrain_move_gear_ratio)
 
     def get_motor_velocity(self) -> radians_per_second:
@@ -131,7 +133,7 @@ class Drivetrain(SwerveDrivetrain):
         SparkMax(5, config=MOVE_CONFIG),
         SparkMax(6, config=TURN_CONFIG),
         wpilib.AnalogEncoder(2),
-        encoder_zeroed_absolute_pos=0.499,
+        encoder_zeroed_absolute_pos=0.58,
         turn_reversed=True,
     )
     n_11 = SparkMaxSwerveNode(
