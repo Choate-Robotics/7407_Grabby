@@ -2,6 +2,7 @@ import math
 
 import commands2
 import wpilib
+from rev._rev import SparkMaxAlternateEncoder
 from robotpy_toolkit_7407 import Subsystem
 
 import command
@@ -59,8 +60,11 @@ class Grabby(wpilib.TimedRobot):
             "Real 11", Robot.drivetrain.n_11.m_turn.get_sensor_position()
         )
 
-    def teleopInit(self):
+        wpilib.SmartDashboard.putNumber(
+            "Pigeon", Robot.drivetrain.gyro.get_robot_heading()
+        )
 
+    def teleopInit(self):
         commands2.CommandScheduler.getInstance().schedule(
             command.DrivetrainZero(Robot.drivetrain).andThen(
                 command.DriveSwerveCustom(Robot.drivetrain)

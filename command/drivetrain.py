@@ -14,7 +14,7 @@ def curve(x):
 
 
 class DriveSwerveCustom(SubsystemCommand[Drivetrain]):
-    driver_centric = False
+    driver_centric = True
     driver_centric_reversed = False
 
     def initialize(self) -> None:
@@ -105,6 +105,7 @@ class DrivetrainZero(SubsystemCommand[Drivetrain]):
         self.zero()
 
     def isFinished(self) -> bool:
+        self.subsystem.gyro.reset_angle()
         return self.zero_success()
 
     def end(self, interrupted: bool) -> None:

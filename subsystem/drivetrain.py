@@ -88,8 +88,8 @@ class SparkMaxSwerveNode(SwerveNode):
 
 
 class PigeonIMUGyro(SwerveGyro):
-    def __init__(self):
-        self._gyro = Pigeon2(26)
+    def __init__(self, port):
+        self._gyro = Pigeon2(port)
         self._gyro.configMountPose(0, 0, 0)
 
     def init(self):
@@ -151,8 +151,8 @@ class Drivetrain(SwerveDrivetrain):
         drive_reversed=True,
     )
 
-    # gyro = PigeonIMUGyro()
-    gyro = ADIS16448_Wrapper()
+    gyro = PigeonIMUGyro(13)
+    # gyro = ADIS16448_Wrapper()
     axis_dx = Keymap.Drivetrain.DRIVE_X_AXIS
     axis_dy = Keymap.Drivetrain.DRIVE_Y_AXIS
     axis_rotation = Keymap.Drivetrain.DRIVE_ROTATION_AXIS
