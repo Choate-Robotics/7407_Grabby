@@ -5,23 +5,12 @@ description = "Team 7407 Wired Boars 2022-2023 Robot Code"
 authors = ["Sidharth Rao <sidharthmrao@gmail.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.10"
-robotpy = "^2022.4.8"
-robotpy-commands-v2 = "^2022.4.1"
-robotpy-ctre = "^2022.1.1"
-robotpy-hal = "^2022.4.1"
-robotpy-installer = "^2022.1.1"
-robotpy-rev = "^2022.0.1"
-robotpy-wpilib-utilities = "^2022.0.5"
-robotpy-wpimath = "^2022.4.1"
-robotpy-wpiutil = "^2022.4.1"
-wpilib = "^2022.4.1"
-pre-commit = "^2.20.0"
-black = "^22.6.0"
-flake8 = "^4.0.1"
-isort = "^5.10.1"
-logger = "^1.4"
-robotpy-toolkit-7407 = "^0.5.9"
+python=">3.9,<3.12"
+robotpy-toolkit-7407 = "^0.5.49.13"
+pre-commit = "^3.0.0"
+black = "^22.12.0"
+isort = "^5.11.4"
+flake8 = "^6.0.0"
 
 [tool.poetry.dev-dependencies]
 

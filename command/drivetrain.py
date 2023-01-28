@@ -21,11 +21,8 @@ class DriveSwerveCustom(SubsystemCommand[Drivetrain]):
         pass
 
     def execute(self) -> None:
-        dx, dy, d_theta = (
-            self.subsystem.axis_dx.value,
-            self.subsystem.axis_dy.value,
-            -self.subsystem.axis_rotation.value,
-        )
+
+        dx, dy, d_theta = self.subsystem.axis_dx.value, self.subsystem.axis_dy.value, -self.subsystem.axis_rotation.value,
 
         if abs(d_theta) < 0.15:
             d_theta = 0
@@ -36,7 +33,7 @@ class DriveSwerveCustom(SubsystemCommand[Drivetrain]):
 
         dx *= self.subsystem.max_vel
         dy *= -self.subsystem.max_vel
-
+        
         if DriveSwerveCustom.driver_centric:
             self.subsystem.set_driver_centric(
                 (-dy, dx), d_theta * self.subsystem.max_angular_vel
@@ -51,10 +48,10 @@ class DriveSwerveCustom(SubsystemCommand[Drivetrain]):
             )
 
     def end(self, interrupted: bool) -> None:
-        self.subsystem.n_00.set(0, 0)
-        self.subsystem.n_01.set(0, 0)
-        self.subsystem.n_10.set(0, 0)
-        self.subsystem.n_11.set(0, 0)
+        self.subsystem.n_front_left.set(0, 0)
+        self.subsystem.n_front_right.set(0, 0)
+        self.subsystem.n_back_left.set(0, 0)
+        self.subsystem.n_back_right.set(0, 0)
 
     def isFinished(self) -> bool:
         return False
@@ -69,15 +66,15 @@ class DrivetrainZero(SubsystemCommand[Drivetrain]):
         self.subsystem = subsystem
 
     def zero(self):
-        self.subsystem.n_00.zero()
-        self.subsystem.n_01.zero()
-        self.subsystem.n_10.zero()
-        self.subsystem.n_11.zero()
+        self.subsystem.n_back_left.zero()
+        self.subsystem.n_back_right.zero()
+        self.subsystem.n_front_left.zero()
+        self.subsystem.n_front_right.zero()
 
-        self.subsystem.n_00.set_motor_angle(0)
-        self.subsystem.n_01.set_motor_angle(0)
-        self.subsystem.n_10.set_motor_angle(0)
-        self.subsystem.n_11.set_motor_angle(0)
+        self.subsystem.n_back_left.set_motor_angle(0)
+        self.subsystem.n_back_right.set_motor_angle(0)
+        self.subsystem.n_front_left.set_motor_angle(0)
+        self.subsystem.n_front_right.set_motor_angle(0)
 
     def zero_success(self):
         threshold = 0.02
@@ -85,10 +82,10 @@ class DrivetrainZero(SubsystemCommand[Drivetrain]):
         success = True
 
         for i in [
-            self.subsystem.n_00,
-            self.subsystem.n_01,
-            self.subsystem.n_10,
-            self.subsystem.n_11,
+            self.subsystem.n_back_left,
+            self.subsystem.n_back_right,
+            self.subsystem.n_front_left,
+            self.subsystem.n_front_right,
         ]:
             if not (
                 abs(i.encoder.getAbsolutePosition() - i.encoder_zeroed_absolute_pos)
@@ -109,6 +106,4 @@ class DrivetrainZero(SubsystemCommand[Drivetrain]):
         return self.zero_success()
 
     def end(self, interrupted: bool) -> None:
-        # for i in [self.subsystem.n_00, self.subsystem.n_01, self.subsystem.n_10, self.subsystem.n_11]:
-        #     i.m_turn.set_sensor_position(0)
-        ...
+        pass

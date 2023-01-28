@@ -1,9 +1,5 @@
-import math
-
 import commands2
 import wpilib
-from rev._rev import SparkMaxAlternateEncoder
-from robotpy_toolkit_7407 import Subsystem
 
 import command
 import constants
@@ -20,49 +16,11 @@ class Grabby(wpilib.TimedRobot):
         OI.init()
         OI.map_controls()
 
-        subsystems: list[Subsystem] = list(
-            {
-                k: v for k, v in Robot.__dict__.items() if isinstance(v, Subsystem)
-            }.values()
-        )
-
-        for sub in subsystems:
-            sub.init()
-
         commands2.CommandScheduler.getInstance().setPeriod(constants.period)
+        Robot.drivetrain.init()
 
     def robotPeriodic(self) -> None:
         commands2.CommandScheduler.getInstance().run()
-
-        wpilib.SmartDashboard.putNumber(
-            "Encoder 00", Robot.drivetrain.n_00.encoder.getAbsolutePosition()
-        )
-        wpilib.SmartDashboard.putNumber(
-            "Encoder 01", Robot.drivetrain.n_01.encoder.getAbsolutePosition()
-        )
-        wpilib.SmartDashboard.putNumber(
-            "Encoder 10", Robot.drivetrain.n_10.encoder.getAbsolutePosition()
-        )
-        wpilib.SmartDashboard.putNumber(
-            "Encoder 11", Robot.drivetrain.n_11.encoder.getAbsolutePosition()
-        )
-
-        wpilib.SmartDashboard.putNumber(
-            "Real 00", Robot.drivetrain.n_00.m_turn.get_sensor_position()
-        )
-        wpilib.SmartDashboard.putNumber(
-            "Real 01", Robot.drivetrain.n_01.m_turn.get_sensor_position()
-        )
-        wpilib.SmartDashboard.putNumber(
-            "Real 10", Robot.drivetrain.n_10.m_turn.get_sensor_position()
-        )
-        wpilib.SmartDashboard.putNumber(
-            "Real 11", Robot.drivetrain.n_11.m_turn.get_sensor_position()
-        )
-
-        wpilib.SmartDashboard.putNumber(
-            "Pigeon", Robot.drivetrain.gyro.get_robot_heading()
-        )
 
     def teleopInit(self):
         commands2.CommandScheduler.getInstance().schedule(

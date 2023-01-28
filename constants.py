@@ -12,7 +12,7 @@ period = 0.03
 
 # --- DRIVETRAIN ---
 # drivetrain_turn_gear_ratio = ((8.16 * 4096)/(2*math.pi) * rev_sensor_unit / rad).asNumber()
-drivetrain_turn_gear_ratio = 80.4848
+drivetrain_turn_gear_ratio = 12.732
 drivetrain_move_gear_ratio = ((544318 * rev_sensor_unit) / (511 * inch)).asNumber(
     rad / m
 )
