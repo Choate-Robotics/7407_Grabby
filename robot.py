@@ -1,12 +1,12 @@
 import commands2
 import wpilib
-
+import math
 import command
 import constants
 from oi.OI import OI
 from robot_systems import Robot
 from oi.keymap import Keymap
-from wpilib.shuffleboard import Shuffleboard, ShuffleboardContainer
+
 class Grabby(wpilib.TimedRobot):
     def __init__(self):
         super().__init__()
@@ -24,41 +24,26 @@ class Grabby(wpilib.TimedRobot):
 
     def teleopInit(self):
         commands2.CommandScheduler.getInstance().schedule(
+            
             command.DrivetrainZero(Robot.drivetrain).andThen(
                 command.DriveSwerveCustom(Robot.drivetrain)
             )
-            # command.DriveSwerveCustom(Robot.drivetrain)
         )
 
+        # Robot.drivetrain.n_front_left.set_motor_angle(math.pi/2)
+        # Robot.drivetrain.n_front_right.set_motor_angle(math.pi/2)
+        # Robot.drivetrain.n_back_left.set_motor_angle(math.pi/2)
+        # Robot.drivetrain.n_back_right.set_motor_angle(math.pi/2)
+        
+
     def teleopPeriodic(self):
-        # curr_angle = Robot.drivetrain.n_front_left.get_current_motor_angle()
-        # dx = Robot.drivetrain.get_axis_dx()
-        # dy = Robot.drivetrain.get_axis_dy()
-        # theta = Robot.drivetrain.get_axis_rotation()
-        # self.pos.append({'dx': dx, 'dy': dy, 'theta': theta, 'curr_angle': curr_angle}) # raw value
+        print("gyro ", Robot.drivetrain.gyro.get_robot_heading())
+        # print("n_front_left ", Robot.drivetrain.n_front_left.encoder.getAbsolutePosition())
+        # print("n_front_right ", Robot.drivetrain.n_front_right.encoder.getAbsolutePosition())
         pass
 
     def autonomousInit(self):
-        # previous_angle = 0
-        # increasing = False
-        # count = 0
-        # for pos in self.pos:  
-        #     if count == 0:
-        #         previous_angle = pos['curr_angle']
-        #     elif count == 1:
-        #         increasing = pos['curr_angle'] >= previous_angle
-        #     else:  
-        #         dir = pos['curr_angle'] >= previous_angle
-        #         if dir != increasing:
-        #             increasing = dir
-        #             print("SNAPS BACK AT ", pos['curr_angle'])
-        #             print("DX IS ", pos['dx'])
-        #             print("DY IS ", pos['dy'])
-        #             print("D_THETA IS ", pos['theta'])
-        #             print("")
-        #     previous_angle = pos['curr_angle']
-        #     count += 1
-        ...
+        pass
 
     def autonomousPeriodic(self):
         pass

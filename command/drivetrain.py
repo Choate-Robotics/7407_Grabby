@@ -27,16 +27,17 @@ class DriveSwerveCustom(SubsystemCommand[Drivetrain]):
         if abs(d_theta) < 0.15:
             d_theta = 0
 
-        if d_theta < 0:
-            d_theta *= -1
-        
         dx = curve(dx)
         dy = curve(dy)
         d_theta = curve(d_theta)
         
         dx *= self.subsystem.max_vel
         dy *= -self.subsystem.max_vel
-    
+
+        # print("dx ", dx)
+        # print("dy ", dy)
+        # print("d_theta ", d_theta)
+        # print("")
         if DriveSwerveCustom.driver_centric:
             self.subsystem.set_driver_centric(
                 (-dy, dx), d_theta * self.subsystem.max_angular_vel

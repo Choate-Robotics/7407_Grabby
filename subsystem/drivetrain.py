@@ -57,8 +57,12 @@ class SparkMaxSwerveNode(SwerveNode):
         self.m_move.set_raw_output(power)
     
     def set_motor_angle(self, pos: radians):
+        # print("target position ", pos) 
         if self.turn_reversed:
             pos *= -1
+        # print("actual target position ", pos)
+        # print("")
+        # pos = abs(pos)
         self.m_turn.set_target_position(
             (pos / (2 * math.pi)) * constants.drivetrain_turn_gear_ratio
         )
@@ -101,30 +105,30 @@ class SparkMaxSwerveNode(SwerveNode):
         )
 
 class Drivetrain(SwerveDrivetrain):
-    n_back_left = SparkMaxSwerveNode(
+    n_front_left = SparkMaxSwerveNode(
         SparkMax(1, config=MOVE_CONFIG),
         SparkMax(2, config=TURN_CONFIG),
         wpilib.AnalogEncoder(0),
-        encoder_zeroed_absolute_pos=0.578,
+        encoder_zeroed_absolute_pos=0.106,
         turn_reversed=True,
+        drive_reversed=True
     )
-    n_back_right = SparkMaxSwerveNode(
+    n_back_left = SparkMaxSwerveNode(
         SparkMax(3, config=MOVE_CONFIG),
         SparkMax(4, config=TURN_CONFIG),
         wpilib.AnalogEncoder(3),
         encoder_zeroed_absolute_pos=0.414,
-        turn_reversed=True,
-        drive_reversed=True,
+        # turn_reversed=True,
+        # drive_reversed=True,
     )
-    n_front_left = SparkMaxSwerveNode(
+    n_front_right = SparkMaxSwerveNode(
         SparkMax(7, config=MOVE_CONFIG),
         SparkMax(8, config=TURN_CONFIG),
         wpilib.AnalogEncoder(1),
-        encoder_zeroed_absolute_pos=0.990,
-        turn_reversed=True,
-        drive_reversed=True,
+        encoder_zeroed_absolute_pos=0.476,
+        # turn_reversed=True,
     )
-    n_front_right = SparkMaxSwerveNode(
+    n_back_right = SparkMaxSwerveNode(
         SparkMax(5, config=MOVE_CONFIG),
         SparkMax(6, config=TURN_CONFIG),
         wpilib.AnalogEncoder(2),
@@ -143,12 +147,3 @@ class Drivetrain(SwerveDrivetrain):
     deadzone_velocity: meters_per_second = 0.01
     deadzone_angular_velocity: radians_per_second = (5 * deg / s).asNumber(rad / s)
     start_pose: Pose2d = Pose2d(0, 0, 0)
-
-    def get_axis_dx(self):
-        return self.axis_dx.value
-
-    def get_axis_dy(self):
-        return self.axis_dy.value
-    
-    def get_axis_rotation(self):
-        return self.axis_rotation.value
