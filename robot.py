@@ -25,19 +25,19 @@ class Grabby(wpilib.TimedRobot):
     def teleopInit(self):
         commands2.CommandScheduler.getInstance().schedule(
             
-            command.DrivetrainZero(Robot.drivetrain).andThen(
-                command.DriveSwerveCustom(Robot.drivetrain)
-            )
+            # command.DrivetrainZero(Robot.drivetrain).andThen(
+            command.DriveSwerveCustom(Robot.drivetrain)
+            # )
         )
-
+        
         # Robot.drivetrain.n_front_left.set_motor_angle(math.pi/2)
         # Robot.drivetrain.n_front_right.set_motor_angle(math.pi/2)
         # Robot.drivetrain.n_back_left.set_motor_angle(math.pi/2)
         # Robot.drivetrain.n_back_right.set_motor_angle(math.pi/2)
-        
+        ...
 
     def teleopPeriodic(self):
-        print("gyro ", Robot.drivetrain.gyro.get_robot_heading())
+        # print("gyro ", Robot.drivetrain.gyro.get_robot_heading())
         # print("n_front_left ", Robot.drivetrain.n_front_left.encoder.getAbsolutePosition())
         # print("n_front_right ", Robot.drivetrain.n_front_right.encoder.getAbsolutePosition())
         pass

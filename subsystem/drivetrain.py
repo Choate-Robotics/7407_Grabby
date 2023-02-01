@@ -19,6 +19,8 @@ from robotpy_toolkit_7407.utils.units import (
     radians_per_second,
     s,
 )
+
+from robotpy_toolkit_7407.utils.math import *
 from wpimath.geometry import Pose2d
 
 import constants
@@ -40,6 +42,7 @@ class SparkMaxSwerveNode(SwerveNode):
     encoder_zeroed_absolute_pos: float = 0
     drive_reversed: bool = False
     turn_reversed: bool = False
+    name: str = "node"
 
     def init(self):
         super().init()
@@ -48,21 +51,63 @@ class SparkMaxSwerveNode(SwerveNode):
 
     # make the turn motor set their sensor 0 to current horizontal thingy
     def zero(self):
-        current_pos = self.encoder.getAbsolutePosition()
-        zeroed_pos = self.encoder_zeroed_absolute_pos
-        new_pos = current_pos - zeroed_pos
-        self.m_turn.set_sensor_position(new_pos * constants.drivetrain_turn_gear_ratio)
+        current_pos = self.encoder.getAbsolutePosition() - self.encoder_zeroed_absolute_pos
+        self.m_turn.set_sensor_position(current_pos * constants.drivetrain_turn_gear_ratio)
+        self.set_motor_angle(current_pos)
 
     def raw_output(self, power):
         self.m_move.set_raw_output(power)
     
+    def _set_angle(self, target_angle: radians, initial_angle: radians):
+        target_sensor_angle, flipped, flip_sensor_offset = self._resolve_angles(self, target_angle, initial_angle)
+
+        if self.name == "front_right":
+            print("TARGET SENSOR ANGLE: ", target_sensor_angle)
+        # target_sensor_angle -= self.motor_sensor_offset
+        if self.name == "front_right":
+            print("OFFSET: ", print(self.motor_sensor_offset))
+            print("TARGET SENSOR AFTER: ", target_sensor_angle)
+
+        if flipped:
+            if self.name == "front_right":
+                print("FLIPPED--------------------------")
+            self.motor_reversed = not self.motor_reversed
+            self.motor_sensor_offset += flip_sensor_offset
+
+        # print("FINAL ANGLE CALCULATED ", target_sensor_angle)
+        if self.name == "front_right":
+            print("TARGET FIN: ", target_sensor_angle)
+        self.set_motor_angle(target_sensor_angle)
+
+    @staticmethod
+    def _resolve_angles(self, target_angle: radians, initial_angle: radians) -> tuple[float, bool, float]:
+        """
+        :param target_angle: Target node angle
+        :param initial_angle: Initial node sensor angle
+        :return: (target_sensor_angle, flipped, flip_sensor_offset)
+        """
+
+        # Actual angle difference in radians
+        diff = bounded_angle_diff(initial_angle, target_angle)
+        if self.name == "front_right":
+            # print("TARGET ANGLE IS ", target_angle)
+            # print("INITIAL ANGLE IS ", initial_angle)
+            # print("DIFFERENCE IS ", diff)
+            print("ANGLE CALCULATED IS ", diff + initial_angle)
+        # Should we flip
+        if abs(diff) > 0.65 * math.pi:
+            flip_sensor_offset = math.pi if diff > 0 else -math.pi
+            if self.name == "front_right":
+                pass
+                # print("OFFSET ", flip_sensor_offset)
+            diff -= flip_sensor_offset
+            return diff + initial_angle, True, flip_sensor_offset
+
+        return diff + initial_angle, False, 0
+    
     def set_motor_angle(self, pos: radians):
-        # print("target position ", pos) 
         if self.turn_reversed:
             pos *= -1
-        # print("actual target position ", pos)
-        # print("")
-        # pos = abs(pos)
         self.m_turn.set_target_position(
             (pos / (2 * math.pi)) * constants.drivetrain_turn_gear_ratio
         )
@@ -73,6 +118,11 @@ class SparkMaxSwerveNode(SwerveNode):
         )
 
     def get_current_motor_angle(self) -> radians:
+        if self.name == "front_right":
+            pass
+        #     print("current angle ", (self.m_turn.get_sensor_position() / constants.drivetrain_turn_gear_ratio)
+        # * 2
+        # * math.pi)
         return (
             (self.m_turn.get_sensor_position() / constants.drivetrain_turn_gear_ratio)
             * 2
@@ -104,31 +154,34 @@ class SparkMaxSwerveNode(SwerveNode):
             * math.pi
         )
 
+SwerveNode._set_angle = SparkMaxSwerveNode._set_angle
+SwerveNode._resolve_angles = SparkMaxSwerveNode._resolve_angles
 class Drivetrain(SwerveDrivetrain):
-    n_front_left = SparkMaxSwerveNode(
+    n_front_right = SparkMaxSwerveNode(
         SparkMax(1, config=MOVE_CONFIG),
         SparkMax(2, config=TURN_CONFIG),
         wpilib.AnalogEncoder(0),
         encoder_zeroed_absolute_pos=0.106,
         turn_reversed=True,
-        drive_reversed=True
+        drive_reversed=True,
     )
-    n_back_left = SparkMaxSwerveNode(
+    n_back_right = SparkMaxSwerveNode(
         SparkMax(3, config=MOVE_CONFIG),
         SparkMax(4, config=TURN_CONFIG),
         wpilib.AnalogEncoder(3),
         encoder_zeroed_absolute_pos=0.414,
-        # turn_reversed=True,
-        # drive_reversed=True,
+        turn_reversed=True,
+        drive_reversed=True,
+        name="front_right"
     )
-    n_front_right = SparkMaxSwerveNode(
+    n_front_left = SparkMaxSwerveNode(
         SparkMax(7, config=MOVE_CONFIG),
         SparkMax(8, config=TURN_CONFIG),
         wpilib.AnalogEncoder(1),
         encoder_zeroed_absolute_pos=0.476,
-        # turn_reversed=True,
+        turn_reversed=True
     )
-    n_back_right = SparkMaxSwerveNode(
+    n_back_left = SparkMaxSwerveNode(
         SparkMax(5, config=MOVE_CONFIG),
         SparkMax(6, config=TURN_CONFIG),
         wpilib.AnalogEncoder(2),

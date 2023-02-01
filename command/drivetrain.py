@@ -34,10 +34,6 @@ class DriveSwerveCustom(SubsystemCommand[Drivetrain]):
         dx *= self.subsystem.max_vel
         dy *= -self.subsystem.max_vel
 
-        # print("dx ", dx)
-        # print("dy ", dy)
-        # print("d_theta ", d_theta)
-        # print("")
         if DriveSwerveCustom.driver_centric:
             self.subsystem.set_driver_centric(
                 (-dy, dx), d_theta * self.subsystem.max_angular_vel
