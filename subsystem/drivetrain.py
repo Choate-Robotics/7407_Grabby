@@ -20,7 +20,6 @@ from robotpy_toolkit_7407.utils.units import (
     s,
 )
 
-from robotpy_toolkit_7407.utils.math import *
 from wpimath.geometry import Pose2d
 
 import constants
@@ -42,7 +41,6 @@ class SparkMaxSwerveNode(SwerveNode):
     encoder_zeroed_absolute_pos: float = 0
     drive_reversed: bool = False
     turn_reversed: bool = False
-    name: str = "node"
 
     def init(self):
         super().init()
@@ -55,9 +53,6 @@ class SparkMaxSwerveNode(SwerveNode):
         current_pos = self.encoder.getAbsolutePosition() - self.encoder_zeroed_absolute_pos
         self.m_turn.set_sensor_position(current_pos * constants.drivetrain_turn_gear_ratio)
         self.set_motor_angle(current_pos)
-
-    def raw_output(self, power):
-        self.m_move.set_raw_output(power)
     
     def set_motor_angle(self, pos: radians):
         if self.turn_reversed:
@@ -102,9 +97,6 @@ class SparkMaxSwerveNode(SwerveNode):
             * 2
             * math.pi
         )
-
-SwerveNode._set_angle = SparkMaxSwerveNode._set_angle
-SwerveNode._resolve_angles = SparkMaxSwerveNode._resolve_angles
 class Drivetrain(SwerveDrivetrain):
     n_front_right = SparkMaxSwerveNode(
         SparkMax(1, config=MOVE_CONFIG),
@@ -121,7 +113,6 @@ class Drivetrain(SwerveDrivetrain):
         encoder_zeroed_absolute_pos=0.414,
         turn_reversed=True,
         drive_reversed=True,
-        name="front_right"
     )
     n_front_left = SparkMaxSwerveNode(
         SparkMax(7, config=MOVE_CONFIG),
