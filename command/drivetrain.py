@@ -22,7 +22,7 @@ class DriveSwerveCustom(SubsystemCommand[Drivetrain]):
 
     def execute(self) -> None:
 
-        dx, dy, d_theta = self.subsystem.axis_dx.value, self.subsystem.axis_dy.value, -self.subsystem.axis_rotation.value,
+        dx, dy, d_theta = -self.subsystem.axis_dx.value, self.subsystem.axis_dy.value, -self.subsystem.axis_rotation.value,
 
         if abs(d_theta) < 0.15:
             d_theta = 0
