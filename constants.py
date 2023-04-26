@@ -27,3 +27,4 @@ drivetrain_max_vel = (200 * mile / hour).asNumber(m / s)
 drivetrain_target_max_vel = (20 * mile / hour).asNumber(m / s)
 drivetrain_max_angular_vel = (20 * rev / s).asNumber(rad / s)
 drivetrain_max_climb_vel = (10 * mile / hour).asNumber(m / s)
+input_ramp_limit = .2

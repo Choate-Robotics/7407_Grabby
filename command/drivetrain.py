@@ -1,10 +1,12 @@
 from robotpy_toolkit_7407.command import SubsystemCommand
 
 from subsystem import Drivetrain
-
+import constants
+from wpimath.filter import SlewRateLimiter
 
 def curve_abs(x):
     return x**2.4
+
 
 
 def curve(x):
@@ -18,11 +20,15 @@ class DriveSwerveCustom(SubsystemCommand[Drivetrain]):
     driver_centric_reversed = False
 
     def initialize(self) -> None:
-        pass
+        self.dx_limiter = SlewRateLimiter(constants.input_ramp_limit)
+        
+        self.dy_limiter = SlewRateLimiter(constants.input_ramp_limit)
+
 
     def execute(self) -> None:
+        
 
-        dx, dy, d_theta = -self.subsystem.axis_dx.value, self.subsystem.axis_dy.value, -self.subsystem.axis_rotation.value,
+        dx, dy, d_theta = self.dx_limiter.calculate(-self.subsystem.axis_dx.value), self.dy_limiter.calculate(self.subsystem.axis_dy.value), -self.subsystem.axis_rotation.value,
 
         if abs(d_theta) < 0.15:
             d_theta = 0
@@ -53,7 +59,8 @@ class DriveSwerveCustom(SubsystemCommand[Drivetrain]):
         self.subsystem.n_front_right.set(0, 0)
         self.subsystem.n_back_left.set(0, 0)
         self.subsystem.n_back_right.set(0, 0)
-
+        self.dx_limiter.reset(0)
+        self.dy_limiter.reset(0)
     def isFinished(self) -> bool:
         return False
 
@@ -76,6 +83,9 @@ class DrivetrainZero(SubsystemCommand[Drivetrain]):
         self.subsystem.n_back_right.set_motor_angle(0)
         self.subsystem.n_front_left.set_motor_angle(0)
         self.subsystem.n_front_right.set_motor_angle(0)
+        
+        self.dx_limiter.reset(0)
+        self.dy_limiter.reset(0)
 
     def zero_success(self):
         threshold = 0.02
