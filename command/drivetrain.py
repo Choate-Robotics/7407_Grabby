@@ -1,10 +1,12 @@
 from robotpy_toolkit_7407.command import SubsystemCommand
 
 from subsystem import Drivetrain
-
+import constants
+from wpimath.filter import SlewRateLimiter
 
 def curve_abs(x):
     return x**2.4
+
 
 
 def curve(x):
@@ -18,14 +20,15 @@ class DriveSwerveCustom(SubsystemCommand[Drivetrain]):
     driver_centric_reversed = False
 
     def initialize(self) -> None:
-        pass
+        self.dx_limiter = SlewRateLimiter(constants.input_ramp_limit)
+        
+        self.dy_limiter = SlewRateLimiter(constants.input_ramp_limit)
+
 
     def execute(self) -> None:
-        dx, dy, d_theta = (
-            self.subsystem.axis_dx.value,
-            self.subsystem.axis_dy.value,
-            -self.subsystem.axis_rotation.value,
-        )
+        
+
+        dx, dy, d_theta = self.dx_limiter.calculate(-self.subsystem.axis_dx.value), self.dy_limiter.calculate(self.subsystem.axis_dy.value), -self.subsystem.axis_rotation.value,
 
         if abs(d_theta) < 0.15:
             d_theta = 0
@@ -33,7 +36,7 @@ class DriveSwerveCustom(SubsystemCommand[Drivetrain]):
         dx = curve(dx)
         dy = curve(dy)
         d_theta = curve(d_theta)
-
+        
         dx *= self.subsystem.max_vel
         dy *= -self.subsystem.max_vel
 
@@ -41,6 +44,7 @@ class DriveSwerveCustom(SubsystemCommand[Drivetrain]):
             self.subsystem.set_driver_centric(
                 (-dy, dx), d_theta * self.subsystem.max_angular_vel
             )
+            
         elif DriveSwerveCustom.driver_centric_reversed:
             self.subsystem.set_driver_centric(
                 (dy, -dx), d_theta * self.subsystem.max_angular_vel
@@ -51,11 +55,12 @@ class DriveSwerveCustom(SubsystemCommand[Drivetrain]):
             )
 
     def end(self, interrupted: bool) -> None:
-        self.subsystem.n_00.set(0, 0)
-        self.subsystem.n_01.set(0, 0)
-        self.subsystem.n_10.set(0, 0)
-        self.subsystem.n_11.set(0, 0)
-
+        self.subsystem.n_front_left.set(0, 0)
+        self.subsystem.n_front_right.set(0, 0)
+        self.subsystem.n_back_left.set(0, 0)
+        self.subsystem.n_back_right.set(0, 0)
+        self.dx_limiter.reset(0)
+        self.dy_limiter.reset(0)
     def isFinished(self) -> bool:
         return False
 
@@ -69,15 +74,18 @@ class DrivetrainZero(SubsystemCommand[Drivetrain]):
         self.subsystem = subsystem
 
     def zero(self):
-        self.subsystem.n_00.zero()
-        self.subsystem.n_01.zero()
-        self.subsystem.n_10.zero()
-        self.subsystem.n_11.zero()
+        self.subsystem.n_back_left.zero()
+        self.subsystem.n_back_right.zero()
+        self.subsystem.n_front_left.zero()
+        self.subsystem.n_front_right.zero()
 
-        self.subsystem.n_00.set_motor_angle(0)
-        self.subsystem.n_01.set_motor_angle(0)
-        self.subsystem.n_10.set_motor_angle(0)
-        self.subsystem.n_11.set_motor_angle(0)
+        self.subsystem.n_back_left.set_motor_angle(0)
+        self.subsystem.n_back_right.set_motor_angle(0)
+        self.subsystem.n_front_left.set_motor_angle(0)
+        self.subsystem.n_front_right.set_motor_angle(0)
+        
+        self.dx_limiter.reset(0)
+        self.dy_limiter.reset(0)
 
     def zero_success(self):
         threshold = 0.02
@@ -85,10 +93,10 @@ class DrivetrainZero(SubsystemCommand[Drivetrain]):
         success = True
 
         for i in [
-            self.subsystem.n_00,
-            self.subsystem.n_01,
-            self.subsystem.n_10,
-            self.subsystem.n_11,
+            self.subsystem.n_back_left,
+            self.subsystem.n_back_right,
+            self.subsystem.n_front_left,
+            self.subsystem.n_front_right,
         ]:
             if not (
                 abs(i.encoder.getAbsolutePosition() - i.encoder_zeroed_absolute_pos)
@@ -109,6 +117,4 @@ class DrivetrainZero(SubsystemCommand[Drivetrain]):
         return self.zero_success()
 
     def end(self, interrupted: bool) -> None:
-        # for i in [self.subsystem.n_00, self.subsystem.n_01, self.subsystem.n_10, self.subsystem.n_11]:
-        #     i.m_turn.set_sensor_position(0)
-        ...
+        pass

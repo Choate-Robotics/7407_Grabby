@@ -96,17 +96,17 @@ class SparkMaxSwerveNode(SwerveNode):
             (self.m_turn.get_sensor_position() / constants.drivetrain_turn_gear_ratio)
             * 2
             * math.pi
-        )
+        ) * (-1 if self.turn_reversed else 1)
 class Drivetrain(SwerveDrivetrain):
-    n_front_right = SparkMaxSwerveNode(
+    n_front_left = SparkMaxSwerveNode(
         SparkMax(1, config=MOVE_CONFIG),
         SparkMax(2, config=TURN_CONFIG),
         wpilib.AnalogEncoder(0),
         encoder_zeroed_absolute_pos=0.106,
         turn_reversed=True,
-        drive_reversed=True,
+        drive_reversed=False,
     )
-    n_back_right = SparkMaxSwerveNode(
+    n_front_right = SparkMaxSwerveNode(
         SparkMax(3, config=MOVE_CONFIG),
         SparkMax(4, config=TURN_CONFIG),
         wpilib.AnalogEncoder(3),
@@ -114,19 +114,21 @@ class Drivetrain(SwerveDrivetrain):
         turn_reversed=True,
         drive_reversed=True,
     )
-    n_front_left = SparkMaxSwerveNode(
+    n_back_left = SparkMaxSwerveNode(
         SparkMax(7, config=MOVE_CONFIG),
         SparkMax(8, config=TURN_CONFIG),
         wpilib.AnalogEncoder(1),
         encoder_zeroed_absolute_pos=0.476,
-        turn_reversed=True
+        turn_reversed=True,
+        drive_reversed=False,
     )
-    n_back_left = SparkMaxSwerveNode(
+    n_back_right = SparkMaxSwerveNode(
         SparkMax(5, config=MOVE_CONFIG),
         SparkMax(6, config=TURN_CONFIG),
         wpilib.AnalogEncoder(2),
         encoder_zeroed_absolute_pos=0.58,
         turn_reversed=True,
+        drive_reversed=True,
     )
     
     gyro = PigeonIMUGyro_Wrapper(13)
